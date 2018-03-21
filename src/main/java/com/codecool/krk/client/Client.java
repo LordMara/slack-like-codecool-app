@@ -69,12 +69,12 @@ public class Client {
              ObjectInputStream objectInputStream = new ObjectInputStream(serverSocket.getInputStream())
         ){
             this.output = new ClientWriteThread(objectOutputStream, this);
-            this.input = new ClientReadThread(objectInputStream);
+            this.input = new ClientReadThread(objectInputStream, this);
 
             output.start();
             input.start();
 
-            while (!this.input.isInterrupted());
+            while (!this.input.isInterrupted() && !this.output.isInterrupted());
 
         } catch (UnknownHostException e) {
             System.err.println(e.getMessage());
@@ -96,13 +96,9 @@ public class Client {
     }
 
     public void addRoom(String newRoom) {
-        if (this.rooms.contains(newRoom)){
-            System.out.println("This room is exist!");
-        } else {
-            this.rooms.add(newRoom);
-            this.actualRoom = newRoom;
-            System.out.println("Actual room is " + this.actualRoom);
-        }
+        this.rooms.add(newRoom);
+        this.actualRoom = newRoom;
+        System.out.printf("You connect to %s\n", this.actualRoom);
     }
 
     public void removeRoom(String roomToRemove) {
